@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Astraeus Utils</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ── DARK THEME (default) ── */
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #16161f;
+    --border: #1e1e2e;
+    --border2: #2a2a3e;
+    --accent: #7c6aff;
+    --accent2: #ff6a8a;
+    --accent3: #6affb8;
+    --text: #e8e8f0;
+    --text2: #8888aa;
+    --text3: #555577;
+    --header-bg: rgba(10,10,15,0.93);
+    --grid-line: rgba(124,106,255,0.04);
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+
+  /* ── LIGHT THEME ── */
+  html.light {
+    --bg: #fdf8f2;
+    --surface: #fff7ee;
+    --surface2: #fdeedd;
+    --border: #efd9bf;
+    --border2: #e0c49e;
+    --accent: #c94b08;
+    --accent2: #e07a10;
+    --accent3: #a83d00;
+    --text: #1c0e06;
+    --text2: #8a6040;
+    --text3: #c4a880;
+    --header-bg: rgba(253,248,242,0.95);
+    --grid-line: rgba(180,70,10,0.05);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: background 0.25s, color 0.25s;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container { max-width: 1300px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+  /* ── HEADER ── */
+  header {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--header-bg);
+    backdrop-filter: blur(14px);
+    z-index: 100;
+    transition: background 0.25s, border-color 0.25s;
+  }
+
+  .header-inner { display: flex; align-items: center; gap: 16px; }
+
+  .logo {
+    font-family: var(--sans);
+    font-weight: 800;
+    font-size: 20px;
+    letter-spacing: -0.5px;
+    color: var(--text);
+    white-space: nowrap;
+  }
+  .logo span { color: var(--accent); }
+
+  .nav-tabs {
+    display: flex;
+    gap: 3px;
+    margin-left: auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 4px;
+    transition: background 0.25s, border-color 0.25s;
+  }
+
+  .nav-tab {
+    padding: 6px 13px;
+    border-radius: 7px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.18s;
+    border: none;
+    background: none;
+    white-space: nowrap;
+  }
+  .nav-tab:hover { color: var(--text); background: var(--border); }
+  .nav-tab.active { background: var(--accent); color: #fff; }
+
+  /* theme toggle */
+  .theme-toggle {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    border: 1px solid var(--border2);
+    background: var(--surface);
+    color: var(--text2);
+    font-size: 13px;
+    font-family: var(--mono);
+    font-weight: 700;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    letter-spacing: 0;
+  }
+  .theme-toggle:hover { border-color: var(--accent); color: var(--accent); background: var(--surface2); }
+
+  /* ── LAYOUT ── */
+  .main {
+    display: grid;
+    grid-template-columns: 252px 1fr;
+    min-height: calc(100vh - 57px);
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    border-right: 1px solid var(--border);
+    padding: 18px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    overflow-y: auto;
+    transition: border-color 0.25s;
+  }
+
+  .sidebar-section h3 {
+    font-family: var(--sans);
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.8px;
+    color: var(--text3);
+    margin-bottom: 9px;
+    padding: 0 4px;
+  }
+
+  .lang-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+
+  .lang-btn {
+    padding: 7px 9px;
+    border-radius: 7px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text2);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .lang-btn:hover { border-color: var(--accent); color: var(--text); }
+  .lang-btn.active { border-color: var(--accent); color: var(--accent); background: var(--surface2); }
+  .lang-btn .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+
+  .mode-list { display: flex; flex-direction: column; gap: 3px; }
+
+  .mode-btn {
+    padding: 8px 10px;
+    border-radius: 7px;
+    border: 1px solid transparent;
+    background: none;
+    color: var(--text2);
+    font-family: var(--mono);
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex; align-items: center; gap: 8px;
+    text-align: left;
+  }
+  .mode-btn:hover { background: var(--surface); color: var(--text); border-color: var(--border); }
+  .mode-btn.active { background: var(--surface2); border-color: var(--border2); color: var(--text); }
+
+  .mode-badge {
+    margin-left: auto;
+    font-size: 8px;
+    background: var(--accent);
+    color: #fff;
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-weight: 700;
+  }
+
+  /* ── CONTENT ── */
+  .content { display: flex; flex-direction: column; overflow: hidden; }
+
+  .panel { display: none; flex-direction: column; height: 100%; }
+  .panel.active { display: flex; }
+
+  /* ── PANEL HEADER ── */
+  .panel-header {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: border-color 0.25s;
+  }
+  .panel-title { font-family: var(--sans); font-size: 14px; font-weight: 700; }
+  .panel-sub { font-size: 10px; color: var(--text2); margin-left: auto; }
+
+  /* ── QUICK ACTIONS ── */
+  .quick-actions {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    padding: 9px 18px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    transition: background 0.25s, border-color 0.25s;
+  }
+  .qa-label { font-size: 10px; color: var(--text3); margin-right: 2px; align-self: center; }
+
+  .quick-btn {
+    padding: 4px 9px;
+    border-radius: 5px;
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    color: var(--text2);
+    font-family: var(--mono);
+    font-size: 10px;
+    cursor: pointer;
+    transition: all 0.13s;
+  }
+  .quick-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── SPLIT VIEW ── */
+  .split-view {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  .code-pane {
+    display: flex; flex-direction: column;
+    border-right: 1px solid var(--border);
+    overflow: hidden;
+    transition: border-color 0.25s;
+  }
+  .code-pane:last-child { border-right: none; }
+
+  .pane-label {
+    padding: 7px 13px;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--text3);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 7px;
+    transition: border-color 0.25s;
+  }
+  .pip { width: 5px; height: 5px; border-radius: 50%; }
+  .pip-in  { background: var(--accent); }
+  .pip-out { background: var(--accent3); }
+
+  textarea {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    resize: none;
+    padding: 14px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: var(--text);
+    overflow-y: auto;
+  }
+
+  .output-area {
+    flex: 1;
+    padding: 14px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: var(--text);
+    overflow-y: auto;
+    white-space: pre-wrap;
+    cursor: pointer;
+    position: relative;
+  }
+  .output-area.placeholder { color: var(--text3); font-style: italic; }
+
+  /* ── ACTION BAR ── */
+  .action-bar {
+    padding: 10px 18px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    transition: background 0.25s, border-color 0.25s;
+  }
+
+  .prompt-input {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    border-radius: 7px;
+    padding: 8px 12px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.18s, background 0.25s, color 0.25s;
+  }
+  .prompt-input:focus { border-color: var(--accent); }
+  .prompt-input::placeholder { color: var(--text3); }
+
+  .btn {
+    padding: 8px 16px;
+    border-radius: 7px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .btn-primary:hover { opacity: 0.85; }
+  .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn-ghost { background: none; color: var(--text2); border-color: var(--border2); }
+  .btn-ghost:hover { color: var(--text); border-color: var(--accent); }
+
+  /* ── LOADING BAR ── */
+  .loading-bar {
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3), var(--accent));
+    background-size: 300% 100%;
+    animation: flow 1.4s linear infinite;
+    display: none;
+  }
+  .loading-bar.active { display: block; }
+  @keyframes flow { 0%{background-position:0 0} 100%{background-position:300% 0} }
+
+  /* ── STATUS CHIP ── */
+  .status-chip {
+    font-size: 9px; padding: 2px 7px; border-radius: 100px; font-weight: 700; margin-left: auto;
+    background: rgba(106,255,184,0.1); color: var(--accent3); border: 1px solid rgba(106,255,184,0.2);
+  }
+  html.light .status-chip { background: rgba(168,61,0,0.08); color: var(--accent); border-color: rgba(168,61,0,0.2); }
+
+  /* ── CONVERT ── */
+  .convert-controls {
+    padding: 13px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+    background: var(--surface);
+    transition: background 0.25s, border-color 0.25s;
+  }
+  .lang-select {
+    background: var(--bg); border: 1px solid var(--border2); border-radius: 7px;
+    padding: 7px 10px; font-family: var(--mono); font-size: 12px; color: var(--text); outline: none; cursor: pointer;
+    transition: background 0.25s, color 0.25s, border-color 0.18s;
+  }
+  .lang-select:focus { border-color: var(--accent); }
+  .arrow { color: var(--accent2); font-size: 16px; font-weight: 700; }
+
+  /* ── FORMAT OPTIONS ── */
+  .format-options {
+    display: flex; gap: 6px; flex-wrap: wrap; align-items: center;
+    padding: 10px 18px; border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    transition: background 0.25s, border-color 0.25s;
+  }
+  .toggle-btn {
+    padding: 4px 10px; border-radius: 5px;
+    background: var(--bg); border: 1px solid var(--border2);
+    color: var(--text2); font-size: 10px; font-family: var(--mono); cursor: pointer;
+    transition: all 0.13s;
+  }
+  .toggle-btn.on { background: rgba(106,255,184,0.07); border-color: var(--accent3); color: var(--accent3); }
+  html.light .toggle-btn.on { background: rgba(168,61,0,0.07); border-color: var(--accent); color: var(--accent); }
+
+  /* ── EXPLAIN OUTPUT ── */
+  .explain-out {
+    flex: 1; overflow-y: auto; padding: 18px;
+    font-size: 12.5px; line-height: 1.8; color: var(--text);
+  }
+  .explain-out.placeholder { color: var(--text3); font-style: italic; }
+  .explain-out h3 { font-family: var(--sans); font-size: 13px; font-weight: 700; color: var(--accent); margin: 16px 0 6px; }
+  .explain-out h3:first-child { margin-top: 0; }
+  .explain-out code { background: var(--surface2); border: 1px solid var(--border2); padding: 1px 5px; border-radius: 4px; font-size: 11.5px; color: var(--accent3); }
+  html.light .explain-out code { color: var(--accent); }
+
+  /* ── BUNDLE ── */
+  .bundle-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 10px; padding: 16px;
+  }
+  .bundle-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 16px; cursor: pointer; transition: all 0.18s;
+  }
+  .bundle-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.25); }
+  .bundle-card.selected { border-color: var(--accent); background: var(--surface2); }
+  html.light .bundle-card:hover { box-shadow: 0 6px 20px rgba(160,60,0,0.12); }
+  .bundle-name { font-family: var(--sans); font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  .bundle-desc { font-size: 10px; color: var(--text2); line-height: 1.5; }
+  .bundle-type-icon {
+    width: 28px; height: 28px; border-radius: 6px; margin-bottom: 10px;
+    background: var(--border2); display: flex; align-items: center; justify-content: center;
+    font-family: var(--sans); font-size: 10px; font-weight: 800; color: var(--accent); letter-spacing: -0.5px;
+  }
+
+  .bundle-config {
+    padding: 0 16px 14px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  }
+  .config-field label { display: block; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text2); margin-bottom: 5px; }
+  .config-field input, .config-field select {
+    width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
+    padding: 7px 9px; font-family: var(--mono); font-size: 11px; color: var(--text); outline: none;
+    transition: border-color 0.18s, background 0.25s, color 0.25s;
+  }
+  .config-field input:focus, .config-field select:focus { border-color: var(--accent); }
+
+  .bundle-actions { padding: 0 16px 14px; display: flex; align-items: center; gap: 10px; }
+  .bundle-selected-label { font-size: 11px; color: var(--text2); }
+
+  .bundle-output-wrap {
+    margin: 0 16px 16px; flex: 1;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 9px; overflow: hidden;
+    min-height: 160px; display: flex; flex-direction: column;
+  }
+  .bundle-output-wrap .output-area { border-radius: 0; font-size: 11.5px; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 22px; right: 22px;
+    background: var(--surface2); border: 1px solid var(--border2); border-radius: 9px;
+    padding: 10px 16px; font-size: 11px; display: flex; align-items: center; gap: 7px;
+    z-index: 9999; transform: translateY(70px); opacity: 0;
+    transition: all 0.28s cubic-bezier(0.34,1.56,0.64,1);
+    box-shadow: 0 6px 28px rgba(0,0,0,0.35);
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent3); flex-shrink: 0; }
+  html.light .toast { background: #fff7ee; }
+  html.light .toast-dot { background: var(--accent); }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* icon-btn */
+.icon-btn{width:30px;height:30px;border-radius:7px;border:1px solid var(--border2);background:var(--surface);color:var(--text2);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+.icon-btn:hover{border-color:var(--accent);color:var(--accent)}
+.header-btns{display:flex;gap:6px;align-items:center}
+/* backend badge */
+.backend-badge{font-size:8px;padding:3px 8px;border-radius:100px;border:1px solid var(--border2);color:var(--text2);font-family:var(--mono);cursor:pointer;white-space:nowrap;background:var(--surface);transition:all .2s}
+.backend-badge:hover{border-color:var(--accent);color:var(--accent)}
+.backend-badge.connected{border-color:var(--accent3);color:var(--accent3)}
+/* modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:1000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:24px;width:480px;max-width:95vw;max-height:90vh;overflow-y:auto;position:relative}
+.modal-title{font-family:var(--sans);font-size:16px;font-weight:800;margin-bottom:6px}
+.modal-sub{font-size:10px;color:var(--text2);margin-bottom:20px;line-height:1.6}
+.modal-close{position:absolute;top:16px;right:16px;width:28px;height:28px;border-radius:7px;border:1px solid var(--border2);background:none;color:var(--text2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.modal-close:hover{color:var(--text);border-color:var(--accent)}
+.backend-tabs{display:flex;gap:3px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:3px;margin-bottom:18px}
+.backend-tab{flex:1;padding:6px 4px;border-radius:5px;border:none;background:none;font-family:var(--mono);font-size:10px;color:var(--text2);cursor:pointer;transition:all .13s;text-align:center}
+.backend-tab:hover{color:var(--text)}
+.backend-tab.active{background:var(--accent);color:#fff}
+.backend-panel{display:none;flex-direction:column;gap:12px}
+.backend-panel.active{display:flex}
+.field-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--text2);display:block;margin-bottom:4px}
+.field-input{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:7px;padding:8px 10px;font-family:var(--mono);font-size:11px;color:var(--text);outline:none;transition:border-color .16s}
+.field-input:focus{border-color:var(--accent)}
+.field-input::placeholder{color:var(--text3)}
+.info-box{background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:10px 12px;font-size:10px;color:var(--text2);line-height:1.7}
+.info-box a{color:var(--accent);text-decoration:none}
+.info-box a:hover{text-decoration:underline}
+.info-box strong{color:var(--text);font-weight:600}
+.modal-footer{display:flex;gap:8px;margin-top:20px;justify-content:flex-end}
+.test-result{font-size:10px;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text2);display:none;margin-top:8px}
+.test-result.ok{border-color:var(--accent3);color:var(--accent3);background:rgba(106,255,184,.06)}
+.test-result.fail{border-color:var(--accent2);color:var(--accent2);background:rgba(255,106,138,.06)}
+.model-select{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:7px;padding:8px 10px;font-family:var(--mono);font-size:11px;color:var(--text);outline:none;cursor:pointer}
+.model-select:focus{border-color:var(--accent)}
+</style>
+</head>
+<body>
+
+
+<!-- SETTINGS MODAL -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal">
+    <div class="modal-title">AI Backend Settings</div>
+    <div class="modal-sub">Choose how Astraeus Utils connects to an AI model. Ollama and LM Studio are 100% free and run locally on your machine.</div>
+    <button class="modal-close" id="modalClose">&#x2715;</button>
+    <div class="backend-tabs">
+      <button class="backend-tab active" data-backend="ollama">Ollama</button>
+      <button class="backend-tab" data-backend="lmstudio">LM Studio</button>
+      <button class="backend-tab" data-backend="openrouter">OpenRouter</button>
+      <button class="backend-tab" data-backend="anthropic">Anthropic</button>
+    </div>
+    <!-- OLLAMA -->
+    <div class="backend-panel active" id="bp-ollama">
+      <div class="info-box"><strong>Ollama</strong> runs AI models locally &#8212; completely free, no internet needed after setup.<br><br>1. Install from <a href="https://ollama.com" target="_blank">ollama.com</a><br>2. Run: <code style="background:var(--surface2);padding:1px 5px;border-radius:3px;font-family:var(--mono)">ollama pull llama3.2</code><br>3. Ollama starts automatically on port 11434</div>
+      <div><label class="field-label">Ollama URL</label><input class="field-input" id="ollamaUrl" placeholder="http://localhost:11434" value="http://localhost:11434" /></div>
+      <div><label class="field-label">Model</label><input class="field-input" id="ollamaModel" placeholder="llama3.2" value="llama3.2" /><div style="font-size:9px;color:var(--text3);margin-top:4px">Other options: codellama, mistral, deepseek-coder, phi3, gemma2</div></div>
+      <div id="ollamaTestResult" class="test-result"></div>
+    </div>
+    <!-- LM STUDIO -->
+    <div class="backend-panel" id="bp-lmstudio">
+      <div class="info-box"><strong>LM Studio</strong> runs models locally with a GUI &#8212; free forever.<br><br>1. Download from <a href="https://lmstudio.ai" target="_blank">lmstudio.ai</a><br>2. Download a model inside the app<br>3. Go to <strong>Local Server</strong> tab and click <strong>Start Server</strong></div>
+      <div><label class="field-label">LM Studio URL</label><input class="field-input" id="lmstudioUrl" placeholder="http://localhost:1234" value="http://localhost:1234" /></div>
+      <div><label class="field-label">Model name</label><input class="field-input" id="lmstudioModel" placeholder="local-model" value="local-model" /><div style="font-size:9px;color:var(--text3);margin-top:4px">Copy the model identifier shown in LM Studio's server tab</div></div>
+      <div id="lmstudioTestResult" class="test-result"></div>
+    </div>
+    <!-- OPENROUTER -->
+    <div class="backend-panel" id="bp-openrouter">
+      <div class="info-box"><strong>OpenRouter</strong> &#8212; free tier available with many models, no credit card required to start.<br><br>1. Sign up at <a href="https://openrouter.ai" target="_blank">openrouter.ai</a><br>2. Go to <strong>Keys</strong> and create an API key<br>3. Free models are marked with ":free"</div>
+      <div><label class="field-label">OpenRouter API Key</label><input class="field-input" id="openrouterKey" type="password" placeholder="sk-or-v1-..." /></div>
+      <div><label class="field-label">Model</label>
+        <select class="model-select" id="openrouterModel">
+          <option value="mistralai/mistral-7b-instruct:free">Mistral 7B (free)</option>
+          <option value="meta-llama/llama-3.2-3b-instruct:free">Llama 3.2 3B (free)</option>
+          <option value="meta-llama/llama-3.1-8b-instruct:free">Llama 3.1 8B (free)</option>
+          <option value="google/gemma-2-9b-it:free">Gemma 2 9B (free)</option>
+          <option value="qwen/qwen-2.5-7b-instruct:free">Qwen 2.5 7B (free)</option>
+          <option value="deepseek/deepseek-r1:free">DeepSeek R1 (free)</option>
+          <option value="anthropic/claude-3-haiku">Claude 3 Haiku (paid)</option>
+          <option value="openai/gpt-4o-mini">GPT-4o Mini (paid)</option>
+        </select>
+      </div>
+      <div id="openrouterTestResult" class="test-result"></div>
+    </div>
+    <!-- ANTHROPIC -->
+    <div class="backend-panel" id="bp-anthropic">
+      <div class="info-box"><strong>Anthropic API</strong> &#8212; requires an API key with credits. New accounts get free trial credits.<br><br>1. Get a key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a><br>2. Note: direct browser requests require serving from a local server (e.g. <code style="background:var(--surface2);padding:1px 4px;border-radius:3px;font-family:var(--mono)">python -m http.server</code>)</div>
+      <div><label class="field-label">Anthropic API Key</label><input class="field-input" id="anthropicKey" type="password" placeholder="sk-ant-..." /></div>
+      <div><label class="field-label">Model</label>
+        <select class="model-select" id="anthropicModel">
+          <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5 (fastest, cheapest)</option>
+          <option value="claude-sonnet-4-20250514" selected>Claude Sonnet 4 (balanced)</option>
+          <option value="claude-opus-4-20250514">Claude Opus 4 (most capable)</option>
+        </select>
+      </div>
+      <div id="anthropicTestResult" class="test-result"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="testConnectionBtn">Test Connection</button>
+      <button class="btn btn-primary" id="saveSettingsBtn">Save &amp; Close</button>
+    </div>
+  </div>
+</div>
+
+<header>
+  <div class="container">
+    <div class="header-inner">
+      <div class="logo">Astraeus <span>Utils</span></div>
+      <nav class="nav-tabs">
+        <button class="nav-tab active" data-panel="fix">Fix &amp; Tweak</button>
+        <button class="nav-tab" data-panel="convert">Convert</button>
+        <button class="nav-tab" data-panel="format">Format</button>
+        <button class="nav-tab" data-panel="explain">Explain</button>
+        <button class="nav-tab" data-panel="bundle">Bundle</button>
+        <button class="nav-tab" data-panel="gen">Generate</button>
+      </nav>
+      <div class="header-btns"><button class="backend-badge" id="backendBadge" title="AI Backend Settings">&#9881; not configured</button><button class="icon-btn" id="themeToggle" title="Toggle theme">&#127769;</button></div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+<div class="main">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <h3>Language</h3>
+      <div class="lang-grid">
+        <button class="lang-btn active" data-lang="python"><span class="dot" style="background:#3776ab"></span>Python</button>
+        <button class="lang-btn" data-lang="javascript"><span class="dot" style="background:#f7df1e"></span>JavaScript</button>
+        <button class="lang-btn" data-lang="html"><span class="dot" style="background:#e34f26"></span>HTML</button>
+        <button class="lang-btn" data-lang="css"><span class="dot" style="background:#1572b6"></span>CSS</button>
+        <button class="lang-btn" data-lang="typescript"><span class="dot" style="background:#3178c6"></span>TypeScript</button>
+        <button class="lang-btn" data-lang="lua"><span class="dot" style="background:#6e7abf"></span>Lua</button>
+        <button class="lang-btn" data-lang="rust"><span class="dot" style="background:#ce422b"></span>Rust</button>
+        <button class="lang-btn" data-lang="go"><span class="dot" style="background:#00add8"></span>Go</button>
+        <button class="lang-btn" data-lang="c++"><span class="dot" style="background:#00599c"></span>C++</button>
+        <button class="lang-btn" data-lang="swift"><span class="dot" style="background:#fa7343"></span>Swift</button>
+        <button class="lang-btn" data-lang="kotlin"><span class="dot" style="background:#7f52ff"></span>Kotlin</button>
+        <button class="lang-btn" data-lang="bash"><span class="dot" style="background:#4eaa25"></span>Bash</button>
+        <button class="lang-btn" data-lang="sql"><span class="dot" style="background:#e38c00"></span>SQL</button>
+        <button class="lang-btn" data-lang="php"><span class="dot" style="background:#777bb4"></span>PHP</button>
+        <button class="lang-btn" data-lang="ruby"><span class="dot" style="background:#cc342d"></span>Ruby</button>
+        <button class="lang-btn" data-lang="java"><span class="dot" style="background:#f89820"></span>Java</button>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <h3>Quick Modes</h3>
+      <div class="mode-list">
+        <button class="mode-btn active" data-mode="bugfix" data-prompt="Fix all bugs and syntax errors">Bug Fix</button>
+        <button class="mode-btn" data-mode="optimize" data-prompt="Optimize for performance and memory">Optimize</button>
+        <button class="mode-btn" data-mode="refactor" data-prompt="Refactor to be more readable and maintainable">Refactor</button>
+        <button class="mode-btn" data-mode="security" data-prompt="Find and fix security vulnerabilities">Security Audit</button>
+        <button class="mode-btn" data-mode="tests" data-prompt="Write comprehensive unit tests"><span>Add Tests</span><span class="mode-badge">AI</span></button>
+        <button class="mode-btn" data-mode="comments" data-prompt="Add clear docstrings and inline comments">Add Comments</button>
+        <button class="mode-btn" data-mode="dry" data-prompt="Refactor to eliminate repetition (DRY principle)">DRY it Up</button>
+        <button class="mode-btn" data-mode="types" data-prompt="Add complete type annotations">Add Types</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="content">
+
+    <!-- FIX & TWEAK -->
+    <div class="panel active" id="panel-fix">
+      <div class="panel-header">
+        <div class="panel-title">Fix &amp; Tweak</div>
+        <div id="modeLabel" style="font-size:10px;color:var(--accent)">mode: bug fix</div>
+        <div class="panel-sub" id="langLabel">python</div>
+      </div>
+      <div class="quick-actions">
+        <span class="qa-label">Quick:</span>
+        <button class="quick-btn" data-qprompt="Fix all bugs and syntax errors">Fix bugs</button>
+        <button class="quick-btn" data-qprompt="Optimize for performance">Optimize</button>
+        <button class="quick-btn" data-qprompt="Add error handling and edge cases">Error handling</button>
+        <button class="quick-btn" data-qprompt="Refactor to be more readable">Readability</button>
+        <button class="quick-btn" data-qprompt="Add type hints and annotations">Add types</button>
+        <button class="quick-btn" data-qprompt="Write unit tests for this code">Write tests</button>
+        <button class="quick-btn" data-qprompt="Add docstrings and comments">Add docs</button>
+        <button class="quick-btn" data-qprompt="Make this more DRY and avoid repetition">DRY it up</button>
+        <button class="quick-btn" data-qprompt="Find security vulnerabilities">Security check</button>
+        <button class="quick-btn" data-qprompt="Convert to async/await pattern">To async</button>
+      </div>
+      <div class="loading-bar" id="fixLoader"></div>
+      <div class="split-view">
+        <div class="code-pane">
+          <div class="pane-label"><span class="pip pip-in"></span>YOUR CODE</div>
+          <textarea id="inputCode" placeholder="Paste your code here..."></textarea>
+        </div>
+        <div class="code-pane">
+          <div class="pane-label"><span class="pip pip-out"></span>FIXED OUTPUT<span class="status-chip" id="fixStatus" style="display:none">ready</span></div>
+          <div class="output-area placeholder" id="fixOutput">Output will appear here. Click to copy.</div>
+        </div>
+      </div>
+      <div class="action-bar">
+        <input class="prompt-input" id="fixPrompt" placeholder="Describe the fix... e.g. fix the off-by-one error in the loop" />
+        <button class="btn btn-ghost" id="clearFixBtn">Clear</button>
+        <button class="btn btn-primary" id="fixBtn">Run Fix</button>
+      </div>
+    </div>
+
+    <!-- CONVERT -->
+    <div class="panel" id="panel-convert">
+      <div class="panel-header"><div class="panel-title">Convert Language</div></div>
+      <div class="convert-controls">
+        <select class="lang-select" id="fromLang">
+          <option value="python">Python</option><option value="javascript">JavaScript</option>
+          <option value="typescript">TypeScript</option><option value="lua">Lua</option>
+          <option value="rust">Rust</option><option value="go">Go</option>
+          <option value="c++">C++</option><option value="swift">Swift</option>
+          <option value="kotlin">Kotlin</option><option value="bash">Bash</option>
+          <option value="php">PHP</option><option value="ruby">Ruby</option>
+          <option value="java">Java</option><option value="html">HTML</option><option value="css">CSS</option>
+        </select>
+        <span class="arrow">&#x2192;</span>
+        <select class="lang-select" id="toLang">
+          <option value="javascript">JavaScript</option><option value="python">Python</option>
+          <option value="typescript">TypeScript</option><option value="lua">Lua</option>
+          <option value="rust">Rust</option><option value="go">Go</option>
+          <option value="c++">C++</option><option value="swift">Swift</option>
+          <option value="kotlin">Kotlin</option><option value="bash">Bash</option>
+          <option value="php">PHP</option><option value="ruby">Ruby</option><option value="java">Java</option>
+        </select>
+        <button class="btn btn-primary" id="convertBtn">Convert</button>
+      </div>
+      <div class="loading-bar" id="convertLoader"></div>
+      <div class="split-view">
+        <div class="code-pane">
+          <div class="pane-label"><span class="pip pip-in"></span>SOURCE CODE</div>
+          <textarea id="convertInput" placeholder="Paste code to convert..."></textarea>
+        </div>
+        <div class="code-pane">
+          <div class="pane-label"><span class="pip pip-out"></span>CONVERTED</div>
+          <div class="output-area placeholder" id="convertOutput">Converted code will appear here...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FORMAT -->
+    <div class="panel" id="panel-format">
+      <div class="panel-header"><div class="panel-title">Format &amp; Lint</div></div>
+      <div class="format-options">
+        <span class="qa-label">Options:</span>
+        <button class="toggle-btn on" data-opt="indent">2-space indent</button>
+        <button class="toggle-btn" data-opt="semicolons">Semicolons</button>
+        <button class="toggle-btn on" data-opt="trailing">Trailing commas</button>
+        <button class="toggle-btn on" data-opt="quotes">Single quotes</button>
+        <button class="toggle-btn" data-opt="linewidth">80 char limit</button>
+        <button class="toggle-btn on" data-opt="unused">Remove unused</button>
+        <button class="toggle-btn" data-opt="sort">Sort imports</button>
+        <button class="btn btn-primary" id="formatBtn" style="margin-left:auto">Format</button>
+      </div>
+      <div class="loading-bar" id="formatLoader"></div>
+      <div class="split-view">
+        <div class="code-pane">
+          <div class="pane-label"><span class="pip pip-in"></span>UNFORMATTED</div>
+          <textarea id="formatInput" placeholder="Paste messy code here..."></textarea>
+        </div>
+        <div class="code-pane">
+          <div class="pane-label"><span class="pip pip-out"></span>FORMATTED</div>
+          <div class="output-area placeholder" id="formatOutput">Formatted code will appear here...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPLAIN -->
+    <div class="panel" id="panel-explain">
+      <div class="panel-header"><div class="panel-title">Explain Code</div></div>
+      <div class="quick-actions">
+        <span class="qa-label">Depth:</span>
+        <button class="quick-btn" data-explain="Give a concise high-level explanation of what this code does">High-level</button>
+        <button class="quick-btn" data-explain="Explain this code line by line">Line by line</button>
+        <button class="quick-btn" data-explain="Analyze the time and space complexity">Complexity</button>
+        <button class="quick-btn" data-explain="Identify any potential bugs, edge cases or issues">Find bugs</button>
+        <button class="quick-btn" data-explain="Explain this simply for a junior developer">For juniors</button>
+        <button class="quick-btn" data-explain="Describe the overall architecture and design patterns used">Architecture</button>
+      </div>
+      <div class="loading-bar" id="explainLoader"></div>
+      <div class="split-view">
+        <div class="code-pane">
+          <div class="pane-label"><span class="pip pip-in"></span>CODE TO EXPLAIN</div>
+          <textarea id="explainInput" placeholder="Paste code to explain..."></textarea>
+        </div>
+        <div class="code-pane">
+          <div class="pane-label"><span class="pip pip-out"></span>EXPLANATION</div>
+          <div class="explain-out placeholder" id="explainOutput">Explanation will appear here...</div>
+        </div>
+      </div>
+      <div class="action-bar">
+        <input class="prompt-input" id="explainPrompt" value="Give a high-level explanation with key points" placeholder="What do you want to know?" />
+        <button class="btn btn-primary" id="explainBtn">Explain</button>
+      </div>
+    </div>
+
+    <!-- BUNDLE -->
+    <div class="panel" id="panel-bundle">
+      <div class="panel-header">
+        <div class="panel-title">Bundle &amp; Package</div>
+        <div class="panel-sub">Generates config files + commands</div>
+      </div>
+      <div class="bundle-grid">
+        <div class="bundle-card" data-bundle="macos"><div class="bundle-type-icon">MAC</div><div class="bundle-name">macOS App</div><div class="bundle-desc">PyInstaller, py2app, or Swift .app bundle</div></div>
+        <div class="bundle-card" data-bundle="windows"><div class="bundle-type-icon">WIN</div><div class="bundle-name">Windows EXE</div><div class="bundle-desc">PyInstaller, cx_Freeze, or Electron .exe</div></div>
+        <div class="bundle-card" data-bundle="linux"><div class="bundle-type-icon">LNX</div><div class="bundle-name">Linux Binary</div><div class="bundle-desc">AppImage, Snap, Flatpak, or .deb package</div></div>
+        <div class="bundle-card" data-bundle="npm"><div class="bundle-type-icon">NPM</div><div class="bundle-name">npm Package</div><div class="bundle-desc">package.json, publish config, TypeScript setup</div></div>
+        <div class="bundle-card" data-bundle="docker"><div class="bundle-type-icon">DCK</div><div class="bundle-name">Docker Image</div><div class="bundle-desc">Dockerfile, docker-compose, multi-stage builds</div></div>
+        <div class="bundle-card" data-bundle="pypi"><div class="bundle-type-icon">PIP</div><div class="bundle-name">PyPI Package</div><div class="bundle-desc">pyproject.toml, setup.py, twine upload</div></div>
+        <div class="bundle-card" data-bundle="webext"><div class="bundle-type-icon">EXT</div><div class="bundle-name">Browser Extension</div><div class="bundle-desc">manifest.json, Chrome/Firefox packaging</div></div>
+        <div class="bundle-card" data-bundle="ios"><div class="bundle-type-icon">IOS</div><div class="bundle-name">iOS / Android</div><div class="bundle-desc">Xcode archive, APK/AAB, React Native build</div></div>
+        <div class="bundle-card" data-bundle="ci"><div class="bundle-type-icon">CI</div><div class="bundle-name">CI/CD Pipeline</div><div class="bundle-desc">GitHub Actions, GitLab CI, CircleCI configs</div></div>
+        <div class="bundle-card" data-bundle="lambda"><div class="bundle-type-icon">SLS</div><div class="bundle-name">Serverless</div><div class="bundle-desc">AWS Lambda, Vercel, Cloudflare Workers deploy</div></div>
+      </div>
+      <div class="bundle-config" id="bundleConfig" style="display:none">
+        <div class="config-field"><label>App / Package Name</label><input id="bundleName" type="text" placeholder="my-awesome-app" /></div>
+        <div class="config-field"><label>Version</label><input id="bundleVersion" type="text" placeholder="1.0.0" /></div>
+        <div class="config-field"><label>Entry Point</label><input id="bundleEntry" type="text" placeholder="main.py or index.js" /></div>
+        <div class="config-field"><label>Target Architecture</label>
+          <select id="bundleArch">
+            <option value="x64">x64 (Intel/AMD)</option>
+            <option value="arm64">arm64 (Apple Silicon)</option>
+            <option value="universal">Universal (both)</option>
+          </select>
+        </div>
+      </div>
+      <div class="bundle-actions" id="bundleActions" style="display:none">
+        <button class="btn btn-primary" id="bundleBtn">Generate Config &amp; Commands</button>
+        <span class="bundle-selected-label" id="selectedBundleName"></span>
+      </div>
+      <div class="loading-bar" id="bundleLoader"></div>
+      <div class="bundle-output-wrap">
+        <div class="output-area placeholder" id="bundleOutput">Generated config and commands will appear here...</div>
+      </div>
+    </div>
+
+    <!-- GENERATE -->
+    <div class="panel" id="panel-gen">
+      <div class="panel-header"><div class="panel-title">Generate Code</div></div>
+      <div class="quick-actions">
+        <span class="qa-label">Templates:</span>
+        <button class="quick-btn" data-gen="REST API endpoint with error handling">REST API</button>
+        <button class="quick-btn" data-gen="database CRUD operations">DB CRUD</button>
+        <button class="quick-btn" data-gen="authentication middleware with JWT">Auth / JWT</button>
+        <button class="quick-btn" data-gen="CLI tool with argument parsing">CLI Tool</button>
+        <button class="quick-btn" data-gen="web scraper with retry logic">Web Scraper</button>
+        <button class="quick-btn" data-gen="file watcher with event handling">File Watcher</button>
+        <button class="quick-btn" data-gen="rate limiter implementation">Rate Limiter</button>
+        <button class="quick-btn" data-gen="config file parser and validator">Config Parser</button>
+      </div>
+      <div class="loading-bar" id="genLoader"></div>
+      <div class="split-view" style="grid-template-columns:1fr 2fr">
+        <div class="code-pane">
+          <div class="pane-label"><span class="pip pip-in"></span>CONTEXT (optional)</div>
+          <textarea id="genContext" placeholder="Paste existing code for style reference...&#10;(optional)"></textarea>
+        </div>
+        <div class="code-pane">
+          <div class="pane-label"><span class="pip pip-out"></span>GENERATED CODE</div>
+          <div class="output-area placeholder" id="genOutput">Generated code will appear here...</div>
+        </div>
+      </div>
+      <div class="action-bar">
+        <input class="prompt-input" id="genPrompt" placeholder="Describe what to generate... e.g. a recursive binary search with memoization" />
+        <button class="btn btn-primary" id="genBtn">Generate</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span class="toast-dot"></span>
+  <span id="toastMsg">Done</span>
+</div>
+
+<script>
+// STATE
+let selectedLang = 'python';
+let isLight = false;
+let formatOpts = {indent:true,semicolons:false,trailing:true,quotes:true,linewidth:false,unused:true,sort:false};
+let selectedBundle = null;
+let activeBackend = 'ollama';
+
+// PERSIST SETTINGS
+function saveSettings(){
+  try{
+    localStorage.setItem('au-backend',activeBackend);
+    localStorage.setItem('au-ollama-url',document.getElementById('ollamaUrl').value);
+    localStorage.setItem('au-ollama-model',document.getElementById('ollamaModel').value);
+    localStorage.setItem('au-lmstudio-url',document.getElementById('lmstudioUrl').value);
+    localStorage.setItem('au-lmstudio-model',document.getElementById('lmstudioModel').value);
+    localStorage.setItem('au-openrouter-key',document.getElementById('openrouterKey').value);
+    localStorage.setItem('au-openrouter-model',document.getElementById('openrouterModel').value);
+    localStorage.setItem('au-anthropic-key',document.getElementById('anthropicKey').value);
+    localStorage.setItem('au-anthropic-model',document.getElementById('anthropicModel').value);
+  }catch(e){}
+}
+function loadSettings(){
+  try{
+    const b=localStorage.getItem('au-backend');if(b)activeBackend=b;
+    const sv=(id,key)=>{const v=localStorage.getItem(key);if(v)document.getElementById(id).value=v;};
+    sv('ollamaUrl','au-ollama-url');sv('ollamaModel','au-ollama-model');
+    sv('lmstudioUrl','au-lmstudio-url');sv('lmstudioModel','au-lmstudio-model');
+    sv('openrouterKey','au-openrouter-key');sv('openrouterModel','au-openrouter-model');
+    sv('anthropicKey','au-anthropic-key');sv('anthropicModel','au-anthropic-model');
+    document.querySelectorAll('.backend-tab').forEach(t=>t.classList.toggle('active',t.dataset.backend===activeBackend));
+    document.querySelectorAll('.backend-panel').forEach(p=>p.classList.toggle('active',p.id==='bp-'+activeBackend));
+    updateBadge();
+  }catch(e){}
+}
+function updateBadge(){
+  const badge=document.getElementById('backendBadge');
+  const labels={ollama:'Ollama (local)',lmstudio:'LM Studio (local)',openrouter:'OpenRouter',anthropic:'Anthropic API'};
+  badge.textContent='\u2699 '+(labels[activeBackend]||activeBackend);
+  const ok=(activeBackend==='ollama'||activeBackend==='lmstudio')||
+    (activeBackend==='openrouter'&&document.getElementById('openrouterKey').value)||
+    (activeBackend==='anthropic'&&document.getElementById('anthropicKey').value);
+  badge.classList.toggle('connected',!!ok);
+}
+
+// THEME
+(function(){try{if(localStorage.getItem('au-theme')==='light'){isLight=true;document.documentElement.classList.add('light');}}catch(e){}})();
+document.getElementById('themeToggle').textContent=isLight?'\u2600\uFE0F':'\uD83C\uDF19';
+document.getElementById('themeToggle').addEventListener('click',function(){
+  isLight=!isLight;document.documentElement.classList.toggle('light',isLight);
+  this.textContent=isLight?'\u2600\uFE0F':'\uD83C\uDF19';
+  try{localStorage.setItem('au-theme',isLight?'light':'dark');}catch(e){}
+});
+
+// MODAL
+document.getElementById('backendBadge').addEventListener('click',()=>document.getElementById('settingsModal').classList.add('open'));
+document.getElementById('modalClose').addEventListener('click',()=>document.getElementById('settingsModal').classList.remove('open'));
+document.getElementById('settingsModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
+document.querySelectorAll('.backend-tab').forEach(tab=>tab.addEventListener('click',function(){
+  activeBackend=this.dataset.backend;
+  document.querySelectorAll('.backend-tab').forEach(t=>t.classList.toggle('active',t===this));
+  document.querySelectorAll('.backend-panel').forEach(p=>p.classList.toggle('active',p.id==='bp-'+activeBackend));
+  ['ollamaTestResult','lmstudioTestResult','openrouterTestResult','anthropicTestResult'].forEach(id=>{const el=document.getElementById(id);el.style.display='none';el.textContent='';});
+}));
+document.getElementById('saveSettingsBtn').addEventListener('click',function(){
+  saveSettings();updateBadge();document.getElementById('settingsModal').classList.remove('open');showToast('Backend saved: '+activeBackend);
+});
+document.getElementById('testConnectionBtn').addEventListener('click',async function(){
+  const el=document.getElementById(activeBackend+'TestResult');
+  el.style.display='block';el.className='test-result';el.textContent='Testing...';
+  try{
+    const r=await callAI('You are a test. Reply with exactly: OK','ping',null);
+    el.className='test-result ok';el.textContent='\u2713 Connected! Response: '+r.slice(0,80);
+  }catch(err){el.className='test-result fail';el.textContent='\u2717 '+err.message;}
+});
+
+// NAVIGATION
+document.querySelectorAll('.nav-tab').forEach(tab=>{
+  tab.addEventListener('click',function(){
+    document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    this.classList.add('active');document.getElementById('panel-'+this.dataset.panel).classList.add('active');
+  });
+});
+document.querySelectorAll('.lang-btn').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+    this.classList.add('active');selectedLang=this.dataset.lang;document.getElementById('langLabel').textContent=selectedLang;
+  });
+});
+document.querySelectorAll('.mode-btn').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+    this.classList.add('active');
+    const names={bugfix:'bug fix',optimize:'optimize',refactor:'refactor',security:'security audit',tests:'add tests',comments:'add comments',dry:'dry up',types:'add types'};
+    document.getElementById('modeLabel').textContent='mode: '+(names[this.dataset.mode]||this.dataset.mode);
+    document.getElementById('fixPrompt').value=this.dataset.prompt;
+  });
+});
+document.querySelectorAll('[data-qprompt]').forEach(btn=>btn.addEventListener('click',function(){document.getElementById('fixPrompt').value=this.dataset.qprompt;}));
+document.querySelectorAll('[data-explain]').forEach(btn=>btn.addEventListener('click',function(){document.getElementById('explainPrompt').value=this.dataset.explain;}));
+document.querySelectorAll('[data-gen]').forEach(btn=>btn.addEventListener('click',function(){document.getElementById('genPrompt').value='Generate a '+this.dataset.gen+' in '+selectedLang;}));
+document.querySelectorAll('.toggle-btn').forEach(btn=>btn.addEventListener('click',function(){this.classList.toggle('on');formatOpts[this.dataset.opt]=this.classList.contains('on');}));
+document.querySelectorAll('.bundle-card').forEach(card=>card.addEventListener('click',function(){
+  document.querySelectorAll('.bundle-card').forEach(c=>c.classList.remove('selected'));
+  this.classList.add('selected');selectedBundle=this.dataset.bundle;
+  document.getElementById('bundleConfig').style.display='grid';
+  document.getElementById('bundleActions').style.display='flex';
+  document.getElementById('selectedBundleName').textContent=this.querySelector('.bundle-name').textContent;
+}));
+document.getElementById('clearFixBtn').addEventListener('click',function(){
+  document.getElementById('inputCode').value='';setOutput('fixOutput',null);document.getElementById('fixStatus').style.display='none';
+});
+document.querySelectorAll('.output-area,.explain-out').forEach(el=>el.addEventListener('click',function(){
+  if(this.classList.contains('placeholder'))return;
+  navigator.clipboard.writeText(this.textContent).then(()=>showToast('Copied to clipboard'));
+}));
+
+// HELPERS
+function setOutput(id,text){
+  const el=document.getElementById(id);
+  if(text===null||text===undefined){
+    const ph={fixOutput:'Output will appear here. Click to copy.',bundleOutput:'Generated config and commands will appear here...'};
+    el.textContent=ph[id]||'Output will appear here...';el.classList.add('placeholder');
+  }else{el.textContent=text;el.classList.remove('placeholder');}
+}
+function setExplainOutput(html){const el=document.getElementById('explainOutput');el.innerHTML=html;el.classList.remove('placeholder');}
+function showToast(msg){
+  const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg;
+  t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);
+}
+function stripFences(text){return text.replace(/^```[\w]*\n?/gm,'').replace(/^```$/gm,'').trim();}
+function setLoader(id,on){if(id)document.getElementById(id).classList.toggle('active',on);}
+
+// MULTI-BACKEND AI CALLER
+async function callAI(system,user,loaderId){
+  setLoader(loaderId,true);
+  try{
+    let result;
+    if(activeBackend==='ollama') result=await callOllama(system,user);
+    else if(activeBackend==='lmstudio') result=await callLMStudio(system,user);
+    else if(activeBackend==='openrouter') result=await callOpenRouter(system,user);
+    else if(activeBackend==='anthropic') result=await callAnthropic(system,user);
+    else throw new Error('No backend selected. Click \u2699 to configure.');
+    setLoader(loaderId,false);
+    return result;
+  }catch(err){
+    setLoader(loaderId,false);
+    if(loaderId)showToast('Error: '+err.message);
+    throw err;
+  }
+}
+
+async function callOllama(system,user){
+  const url=(document.getElementById('ollamaUrl').value||'http://localhost:11434').replace(/\/$/,'');
+  const model=document.getElementById('ollamaModel').value||'llama3.2';
+  const res=await fetch(url+'/api/chat',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model,stream:false,messages:[{role:'system',content:system},{role:'user',content:user}]})
+  });
+  if(!res.ok)throw new Error('Ollama error '+res.status+'. Is Ollama running? Run: ollama serve');
+  const d=await res.json();return d.message?.content||d.response||'';
+}
+
+async function callLMStudio(system,user){
+  const url=(document.getElementById('lmstudioUrl').value||'http://localhost:1234').replace(/\/$/,'');
+  const model=document.getElementById('lmstudioModel').value||'local-model';
+  const res=await fetch(url+'/v1/chat/completions',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model,max_tokens:1500,messages:[{role:'system',content:system},{role:'user',content:user}]})
+  });
+  if(!res.ok)throw new Error('LM Studio error '+res.status+'. Is the local server running?');
+  const d=await res.json();return d.choices?.[0]?.message?.content||'';
+}
+
+async function callOpenRouter(system,user){
+  const key=document.getElementById('openrouterKey').value;
+  if(!key)throw new Error('No OpenRouter key. Click \u2699 to configure.');
+  const model=document.getElementById('openrouterModel').value||'mistralai/mistral-7b-instruct:free';
+  const res=await fetch('https://openrouter.ai/api/v1/chat/completions',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+key,'HTTP-Referer':'astraeus-utils','X-Title':'Astraeus Utils'},
+    body:JSON.stringify({model,max_tokens:1500,messages:[{role:'system',content:system},{role:'user',content:user}]})
+  });
+  if(!res.ok){let m='OpenRouter error '+res.status;try{const d=await res.json();if(d.error?.message)m=d.error.message;}catch(e){}throw new Error(m);}
+  const d=await res.json();return d.choices?.[0]?.message?.content||'';
+}
+
+async function callAnthropic(system,user){
+  const key=document.getElementById('anthropicKey').value;
+  if(!key)throw new Error('No Anthropic key. Click \u2699 to configure.');
+  const model=document.getElementById('anthropicModel').value||'claude-sonnet-4-20250514';
+  const res=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body:JSON.stringify({model,max_tokens:1500,system,messages:[{role:'user',content:user}]})
+  });
+  if(!res.ok){let m='Anthropic error '+res.status;try{const d=await res.json();if(d.error?.message)m=d.error.message;}catch(e){}throw new Error(m);}
+  const d=await res.json();return d.content?.map(b=>b.text||'').join('')||'';
+}
+
+// PANEL ACTIONS
+document.getElementById('fixBtn').addEventListener('click',async function(){
+  const code=document.getElementById('inputCode').value.trim();
+  const prompt=document.getElementById('fixPrompt').value.trim();
+  if(!code){showToast('Paste some code first');return;}
+  this.disabled=true;this.textContent='Running...';
+  setOutput('fixOutput','Thinking...');document.getElementById('fixOutput').classList.remove('placeholder');
+  try{
+    const r=await callAI('You are an expert '+selectedLang+' developer. Return ONLY the modified code \u2014 no explanation, no markdown fences, no preamble.','Language: '+selectedLang+'\nTask: '+(prompt||'Fix all bugs and improve quality')+'\n\nCode:\n'+code,'fixLoader');
+    setOutput('fixOutput',stripFences(r));document.getElementById('fixStatus').style.display='inline';showToast('Fix complete \u2014 click output to copy');
+  }catch(e){setOutput('fixOutput',null);}
+  this.disabled=false;this.textContent='Run Fix';
+});
+
+document.getElementById('convertBtn').addEventListener('click',async function(){
+  const code=document.getElementById('convertInput').value.trim();
+  const from=document.getElementById('fromLang').value,to=document.getElementById('toLang').value;
+  if(!code){showToast('Paste code to convert');return;}
+  this.disabled=true;this.textContent='Converting...';
+  setOutput('convertOutput','Thinking...');document.getElementById('convertOutput').classList.remove('placeholder');
+  try{
+    const r=await callAI('You are an expert programmer. Convert code from '+from+' to '+to+'. Return ONLY the converted code, no fences, no explanation.','Convert this '+from+' code to '+to+':\n\n'+code,'convertLoader');
+    setOutput('convertOutput',stripFences(r));showToast('Converted to '+to);
+  }catch(e){setOutput('convertOutput',null);}
+  this.disabled=false;this.textContent='Convert';
+});
+
+document.getElementById('formatBtn').addEventListener('click',async function(){
+  const code=document.getElementById('formatInput').value.trim();
+  if(!code){showToast('Paste code to format');return;}
+  this.disabled=true;this.textContent='Formatting...';
+  setOutput('formatOutput','Thinking...');document.getElementById('formatOutput').classList.remove('placeholder');
+  const opts=Object.entries(formatOpts).filter(([,v])=>v).map(([k])=>k).join(', ');
+  try{
+    const r=await callAI('You are a code formatter. Format the '+selectedLang+' code cleanly. Active options: '+(opts||'defaults')+'. Return ONLY formatted code, no fences.','Format this '+selectedLang+' code:\n\n'+code,'formatLoader');
+    setOutput('formatOutput',stripFences(r));showToast('Formatted');
+  }catch(e){setOutput('formatOutput',null);}
+  this.disabled=false;this.textContent='Format';
+});
+
+document.getElementById('explainBtn').addEventListener('click',async function(){
+  const code=document.getElementById('explainInput').value.trim();
+  const prompt=document.getElementById('explainPrompt').value.trim();
+  if(!code){showToast('Paste code to explain');return;}
+  this.disabled=true;this.textContent='Explaining...';
+  document.getElementById('explainOutput').textContent='Thinking...';document.getElementById('explainOutput').classList.remove('placeholder');
+  try{
+    const r=await callAI('You are a programming teacher. Explain code clearly using ## headers and backtick code. Be concise.','Language: '+selectedLang+'\nTask: '+prompt+'\n\nCode:\n'+code,'explainLoader');
+    const html=r.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/^## (.+)$/gm,'<h3>$1</h3>').replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\n/g,'<br>');
+    setExplainOutput(html);showToast('Done \u2014 click output to copy');
+  }catch(e){document.getElementById('explainOutput').textContent='Error occurred.';}
+  this.disabled=false;this.textContent='Explain';
+});
+
+document.getElementById('bundleBtn').addEventListener('click',async function(){
+  if(!selectedBundle){showToast('Select a bundle type');return;}
+  const name=document.getElementById('bundleName').value||'my-app';
+  const version=document.getElementById('bundleVersion').value||'1.0.0';
+  const entry=document.getElementById('bundleEntry').value||'main.py';
+  const arch=document.getElementById('bundleArch').value;
+  this.disabled=true;this.textContent='Generating...';
+  setOutput('bundleOutput','Thinking...');document.getElementById('bundleOutput').classList.remove('placeholder');
+  const descs={macos:'macOS .app bundle',windows:'Windows EXE',linux:'Linux AppImage/Snap/Flatpak',npm:'npm package',docker:'Docker image with Dockerfile and docker-compose',pypi:'PyPI package with pyproject.toml',webext:'Browser extension with manifest.json',ios:'iOS/Android mobile app build',ci:'CI/CD pipeline with GitHub Actions',lambda:'Serverless deployment'};
+  try{
+    const r=await callAI('You are a DevOps and packaging expert. Generate complete, ready-to-use config files and shell commands.','Generate a complete '+descs[selectedBundle]+' setup:\n- Name: '+name+'\n- Version: '+version+'\n- Entry: '+entry+'\n- Arch: '+arch+'\n\nInclude all config file contents, install commands, build commands, and notes.','bundleLoader');
+    setOutput('bundleOutput',r);showToast('Config generated \u2014 click to copy');
+  }catch(e){setOutput('bundleOutput',null);}
+  this.disabled=false;this.textContent='Generate Config & Commands';
+});
+
+document.getElementById('genBtn').addEventListener('click',async function(){
+  const prompt=document.getElementById('genPrompt').value.trim();
+  const context=document.getElementById('genContext').value.trim();
+  if(!prompt){showToast('Describe what to generate');return;}
+  this.disabled=true;this.textContent='Generating...';
+  setOutput('genOutput','Thinking...');document.getElementById('genOutput').classList.remove('placeholder');
+  const user=context?'Generate '+prompt+' in '+selectedLang+'.\n\nStyle reference:\n'+context:'Generate '+prompt+' in '+selectedLang+'.';
+  try{
+    const r=await callAI('You are an expert '+selectedLang+' developer. Generate clean, production-ready code. Return ONLY the code, no fences, no preamble.',user,'genLoader');
+    setOutput('genOutput',stripFences(r));showToast('Generated \u2014 click to copy');
+  }catch(e){setOutput('genOutput',null);}
+  this.disabled=false;this.textContent='Generate';
+});
+
+loadSettings();
+
+</script>
+</body>
+</html>
