@@ -10,3 +10,5 @@ Run the html in your browser to help you fix bugs & code!
 
 2. Everything is set up!
 
+You can use alternatives to Ollama, such as LM studio, Openrouter, or Claude (using your own API credits)
+
