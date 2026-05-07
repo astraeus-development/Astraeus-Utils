@@ -1,4 +1,4 @@
-# Astraeus-Utils
+# Astraeus-Utils - 【100% FREE】
 Run the html in your browser to help you fix bugs & code!
 
 # How to run
