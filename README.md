@@ -11,5 +11,5 @@ Run the html in your browser to help you fix bugs & code!
 
    ]
 
-Run the html, it should work!
+3. Everything is set up!
 
