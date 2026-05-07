@@ -2,4 +2,14 @@
 Run the html in your browser to help you fix bugs & code!
 
 # How to run
-All you need to do is run it, no setup needed!
+1. Install a machine (Ollama recommended: https://ollama.com/)
+2. [ Ollama runs AI models locally — completely free, no internet needed after setup.
+
+1. Install from ollama.com
+2. Run: ollama pull llama3.2
+3. Ollama starts automatically on port 11434
+
+   ]
+
+Run the html, it should work!
+
