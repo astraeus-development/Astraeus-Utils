@@ -1,7 +1,7 @@
-# Astraeus-Utils - 【100% FREE】
+# 【 Astraeus-Utils - 100% FREE 】
 Run the html in your browser to help you fix bugs & code!
 
-# How to run
+# 【 How to run 】
 1. Install a machine (Ollama recommended: https://ollama.com/)
    Ollama runs AI models locally — completely free, no internet needed after setup.
    - Install from ollama.com
